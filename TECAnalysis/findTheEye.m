@@ -15,10 +15,10 @@ playVideo = 0;
 sessionType = 9;
 %mice = [1 2 3 4 5];
 mice = 10;
-nSessions = 7;
+nSessions = 9;
 
 %Crop parameters
-xmin1 = 215;
+xmin1 = 210;
 ymin1 = 140;
 width1 = 200;
 height1 = 120;
@@ -53,8 +53,8 @@ trialDuration = 1.5; % in seconds
 nFrames = 250;
 
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
-%rawDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/Videos/';
-rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+%rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 
 fontSize = 16;
 

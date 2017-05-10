@@ -10,16 +10,17 @@ addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 1;
-doFECAnalysis = 1;
+%checkIfDirExists = 1;
+doFECAnalysis = 0;
 smoothenStimuli = 0;
 plotFigures = 1;
 playVideo = 0;
 
 % Dataset details
 sessionType = 9;
-mice = [8 9];
-%mice = 10;
-nSessions = 6;
+mice = [7 8 9 10];
+%mice = 8;
+nSessions = 9;
 nTrials = 80; % NOTE: During sorting, the dummy trial was excluded
 
 % Video details
@@ -31,7 +32,8 @@ startTrial = 1;
 startFrame = 1;
 
 imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
-rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+%rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 motionDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
 performanceDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
@@ -86,7 +88,7 @@ for mouse = 1:length(mice)
                     try
                         refImage = double(imread(file, frame));
                     catch
-                        warning(['Unable to find ' file])
+                        warning(['Unable to find Frame: ' num2str(frame)])
                         continue
                     end
                     
@@ -290,11 +292,11 @@ for mouse = 1:length(mice)
             
             % Shaded error bars
             notProbes = find(~probeTrials);
-            meanFEC = mean(fec(notProbes,:),1);
-            meanFEC_stddev = std(fec(notProbes,:),1);
+            meanFEC = nanmean(fec(notProbes,:),1);
+            meanFEC_stddev = nanstd(fec(notProbes,:),1);
             probes = find(probeTrials);
-            meanFEC_probe = mean(fec(probes,:),1);
-            meanFEC_probe_stddev = std(fec(probes,:),1);
+            meanFEC_probe = nanmean(fec(probes,:),1);
+            meanFEC_probe_stddev = nanstd(fec(probes,:),1);
             
             subplot(2,2,4)
             lineProps1.col{1} = 'red';
