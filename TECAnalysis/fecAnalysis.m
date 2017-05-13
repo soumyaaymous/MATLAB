@@ -10,7 +10,6 @@ addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 1;
-%checkIfDirExists = 1;
 doFECAnalysis = 0;
 smoothenStimuli = 0;
 plotFigures = 1;
@@ -20,8 +19,8 @@ playVideo = 0;
 sessionType = 9;
 mice = [7 8 9 10];
 %mice = 8;
-nSessions = 9;
-nTrials = 80; % NOTE: During sorting, the dummy trial was excluded
+nSessions = 12;
+nTrials = 80;
 
 % Video details
 nFrames = 250; %per trial; arbitrary
@@ -37,6 +36,11 @@ rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 motionDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
 performanceDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
+
+if ~exist(rawDirec, 'dir')
+    warning('Raw directory not found')
+    return
+end
 
 fontSize = 16;
 lineWidth = 2;
@@ -56,8 +60,8 @@ for mouse = 1:length(mice)
             % Load image processing parameters
             load([imageProcessDirec mouseName '/' dataset '/imageProcess.mat'])
             
-            % Preallocation
-            eyeClosure = nan(nTrials,nFrames); %for every individual session
+            % Preallocation - for every individual session
+            eyeClosure = nan(nTrials,nFrames);
             eyeClosure_baseline = nan(nTrials,1);
             fec = nan(nTrials,nFrames);
             probeTrials = zeros(nTrials,1);
@@ -81,6 +85,10 @@ for mouse = 1:length(mice)
                 else
                     file = [rawDirec mouseName '/' dataset, ...
                         '/trial_0' num2str(trial) '.tif'];
+                    
+                    if (mod(trial,4) == 0) && trial ~= nTrials
+                        disp(['Still working on ' dataset])
+                    end
                 end
                 
                 for frame = startFrame:nFrames
@@ -99,7 +107,7 @@ for mouse = 1:length(mice)
                     fecImage = imcrop(croppedImage,fecROI);
                     
                     %4 - Binarize
-                    %The "threshold" is established by "findTheEye.m"
+                    % The "threshold" is established by "findTheEye.m"
                     binImage = fecImage > threshold; %binarize
                     
                     binImage_vector = reshape(binImage,1,[]);
@@ -195,7 +203,7 @@ for mouse = 1:length(mice)
                 puffi = find(puff(trial,:));
                 if isempty(puffi)
                     probeTrials(trial,1) = 1;
-                    disp(['[INFO] Probe trial found: Trial ' num2str(trial)])
+                    disp('Probe trial found!')
                 end
                 
                 if smoothenStimuli == 1

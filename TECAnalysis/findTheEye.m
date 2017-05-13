@@ -13,12 +13,11 @@ playVideo = 0;
 
 %Dataset details
 sessionType = 9;
-%mice = [1 2 3 4 5];
-mice = 10;
-nSessions = 9;
+mice = 7;
+nSessions = 12;
 
 %Crop parameters
-xmin1 = 210;
+xmin1 = 250;
 ymin1 = 140;
 width1 = 200;
 height1 = 120;
@@ -47,7 +46,7 @@ startTrial = 1;
 startFrame = 1;
 
 %Video details
-samplingRate = 100; % in Frames Per Second (FPS)
+%samplingRate = 100; % in Frames Per Second (FPS)
 trialDuration = 1.5; % in seconds
 %nFrames = floor(samplingRate*trialDuration); %per trial
 nFrames = 250;
@@ -56,9 +55,15 @@ saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 
+if ~exist(rawDirec, 'dir')
+    warning('Raw directory not found')
+    return
+end
+
 fontSize = 16;
 
 for mouse = 1:length(mice)
+    
     mouseName = ['M' num2str(mice(mouse))];
     
     for session = startSession:nSessions
