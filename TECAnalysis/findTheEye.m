@@ -13,11 +13,11 @@ playVideo = 0;
 
 %Dataset details
 sessionType = 9;
-mice = 7;
+mice = 10;
 nSessions = 12;
 
 %Crop parameters
-xmin1 = 250;
+xmin1 = 300;
 ymin1 = 140;
 width1 = 200;
 height1 = 120;
@@ -100,7 +100,8 @@ for mouse = 1:length(mice)
                     binImage = fecImage > threshold; %binarize
                     
                     pause(0.1)
-                    figure(2)
+                    fig2 = figure(2);
+                    set(fig2,'Position', [100, 100, 600, 400]);
                     subplot(1,3,1)
                     imagesc(croppedImage)
                     colormap(gray)
@@ -155,7 +156,8 @@ for mouse = 1:length(mice)
             threshold = prctile(fecImage_vector,50);
             binImage = fecImage > threshold; %binarize
             
-            figure(1)
+            fig1 = figure(1);
+            set(fig1,'Position', [100, 100, 600, 400]);
             subplot(2,2,1)
             imagesc(refImage)
             z = colorbar;

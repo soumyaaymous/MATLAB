@@ -10,7 +10,7 @@ addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 1;
-doFECAnalysis = 0;
+doFECAnalysis = 1;
 smoothenStimuli = 0;
 plotFigures = 1;
 playVideo = 0;
@@ -86,7 +86,7 @@ for mouse = 1:length(mice)
                     file = [rawDirec mouseName '/' dataset, ...
                         '/trial_0' num2str(trial) '.tif'];
                     
-                    if (mod(trial,4) == 0) && trial ~= nTrials
+                    if (mod(trial,10) == 0) && trial ~= nTrials
                         disp(['Still working on ' dataset])
                     end
                 end
@@ -156,7 +156,8 @@ for mouse = 1:length(mice)
                             disp('Playing Video ...');
                         end
                         pause(0.05)
-                        figure(2)
+                        fig2 = figure(2);
+                        set(fig2,'Position', [100, 100, 600, 450]);
                         subplot(1,3,1)
                         imagesc(croppedImage)
                         colormap(gray)
@@ -236,7 +237,8 @@ for mouse = 1:length(mice)
         
         if plotFigures == 1
             % FEC plots
-            figure(4)
+            fig4 = figure(4);
+            set(fig4,'Position', [100, 100, 1200, 800]);
             clf
             %subplot(6,9,1:45)
             subplot(2,2,1)
