@@ -1,6 +1,7 @@
 % AUTHOR - Kambadur Ananthamurthy
 % PURPOSE - FEC analysis
 % DEPENDENCIES - Find the image processing parameters using findTheEye.m
+%              - mseb.m (for plotting shaded error bars; open-source)
 
 tic
 clear all
@@ -19,7 +20,7 @@ playVideo = 0;
 sessionType = 9;
 mice = [7 8 9 10];
 %mice = 8;
-nSessions = 12;
+nSessions = 13;
 nTrials = 80;
 
 % Video details
