@@ -13,19 +13,19 @@ playVideo = 0;
 
 %Dataset details
 sessionType = 9;
-mice = 10;
-nSessions = 13;
+mice = 11;
+nSessions = 3;
 
-%Crop parameters
-xmin1 = 270;
-ymin1 = 145;
+%Crop parameters - please change to requirement
+xmin1 = 200;
+ymin1 = 45;
 width1 = 200;
 height1 = 120;
 crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
 
 %FEC parameters
-xmin2 = 118;
-ymin2 = 5;
+xmin2 = 118; % Don't change
+ymin2 = 5; % Don't change
 width2 = 30; % Don't change
 height2 = 120;% Don't change
 fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
@@ -65,6 +65,7 @@ fontSize = 16;
 for mouse = 1:length(mice)
     
     mouseName = ['M' num2str(mice(mouse))];
+    %mouseName = ['G5-' num2str(mice(mouse))];
     
     for session = startSession:nSessions
         %         dataset = ['Mouse' mouseName '_SessionType' num2str(sessionType) '_Session' num2str(session)];

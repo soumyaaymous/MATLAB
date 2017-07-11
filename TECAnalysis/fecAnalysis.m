@@ -10,21 +10,22 @@ clear all
 addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
 % Operations (0 == Don't Perform; 1 == Perform)
-saveData = 1;
+saveData = 0;
 doFECAnalysis = 1;
-smoothenStimuli = 0;
+smoothenStimuli = 1;
+alignFrames = 1;
 plotFigures = 1;
 playVideo = 0;
 
 % Dataset details
 sessionType = 9;
-mice = [7 8 9 10];
-%mice = 8;
-nSessions = 13;
-nTrials = 80;
+%mice = [7 8 9 10];
+mice = 11;
+nSessions = 3;
+nTrials = 61;
 
 % Video details
-nFrames = 250; %per trial; arbitrary
+nFrames = 270; %per trial; arbitrary
 
 startSession = nSessions; %single sessions
 %startSession = 5;
@@ -50,6 +51,7 @@ transparency = 0.5;
 
 for mouse = 1:length(mice)
     mouseName = ['M' num2str(mice(mouse))];
+    %mouseName = ['G5-' num2str(mice(mouse))];
     
     for session = startSession:nSessions
         dataset = [mouseName '_' num2str(sessionType) '_' num2str(session)];
@@ -88,7 +90,7 @@ for mouse = 1:length(mice)
                         '/trial_0' num2str(trial) '.tif'];
                     
                     if (mod(trial,10) == 0) && trial ~= nTrials
-                        disp(['Still working on ' dataset])
+                        disp(['... working on ' dataset ' ...'])
                     end
                 end
                 
@@ -146,10 +148,10 @@ for mouse = 1:length(mice)
                         puff(trial,frame)= str2double(sprintf(dataLine(commai(4)+1:commai(5)-1),'%s'));
                         %tone(trial,frame) = str2double(sprintf(dataLine(commai(5)+1:commai(6)-1),'%s'));
                         led(trial,frame) = str2double(sprintf(dataLine(commai(6)+1:commai(7)-1),'%s'));
-                        %motion1(trial,frame) = str2double(sprintf(dataLine(commai(7)+1:commai(8)-1),'%s'));
-                        %motion2(trial,frame) = str2double(sprintf(dataLine(commai(8)+1:commai(9)-1),'%s'));
-                        %camera(trial,frame) = str2double(sprintf(dataLine(commai(9)+1:commai(10)-1),'%s'));
-                        %microscope(trial,frame) = str2double(sprintf(dataLine(commai(10)+1:commai(11)-1),'%s'));
+                        motion1(trial,frame) = str2double(sprintf(dataLine(commai(7)+1:commai(8)-1),'%s'));
+                        motion2(trial,frame) = str2double(sprintf(dataLine(commai(8)+1:commai(9)-1),'%s'));
+                        camera(trial,frame) = str2double(sprintf(dataLine(commai(9)+1:commai(10)-1),'%s'));
+                        microscope(trial,frame) = str2double(sprintf(dataLine(commai(10)+1:commai(11)-1),'%s'));
                     end
                     
                     if playVideo == 1
@@ -208,32 +210,77 @@ for mouse = 1:length(mice)
                     disp('Probe trial found!')
                 end
                 
-                if smoothenStimuli == 1
-                    %Smoothen (on account of missing data lines)
-                    %LED
-                    ledi = find(led(trial,:));
-                    if isempty(ledi)
-                        warning(['There is no CS played in trial ' num2str(trial)])
-                        continue
-                    else
-                        led(trial,ledi(1):ledi(end)) = 1;
-                    end
-                    
-                    %Puff
-                    puffi = find(puff(trial,:));
-                    if isempty(puffi)
-                        warning(['There is no US played in trial ' num2str(trial)])
-                        continue
-                    else
-                        puff(trial,puffi(1):puffi(end)) = 1;
-                    end
-                end
                 disp('... done')
             end
         else
             load([saveDirec mouseName '/' dataset '/fec.mat']);
             %load([motionDirec mouseName '/' dataset '/motion.mat']);
             %load([performanceDirec mouseName '/' dataset '/performance.mat']);
+        end
+        
+        if smoothenStimuli == 1
+            disp('Smoothening stimuli ...')
+            %Smoothen (on account of missing data lines)
+            %LED
+            for trial = startTrial:nTrials
+                ledi = find(led(trial,:));
+                if isempty(ledi)
+                    warning(['There is no CS played in trial ' num2str(trial)])
+                    continue
+                else
+                    led(trial,ledi(1):ledi(end)) = 1;
+                end
+                
+                %Puff
+                puffi = find(puff(trial,:));
+                if isempty(puffi)
+                    warning(['There is no US played in trial ' num2str(trial)])
+                    continue
+                else
+                    puff(trial,puffi(1):puffi(end)) = 1;
+                end
+            end
+        end
+        
+        if alignFrames == 1
+            csStartFrame = nan(nTrials,1);
+            csStartOffset = nan(nTrials,1);
+            usStartFrame = nan(nTrials,1);
+            nISIFrames = nan(nTrials,1);
+            
+            %Aligned matrices
+            alignedFEC = nan(nTrials,(nFrames-10)); % -5 on each end
+            alignedPuff = nan(nTrials,(nFrames-10)); % -5 on each end
+            alignedLED = nan(nTrials,(nFrames-10)); % -5 on each end
+            alignedMotion1 = nan(nTrials,(nFrames-10)); % -5 on each end
+            alignedMotion2 = nan(nTrials,(nFrames-10)); % -5 on each end
+            
+            for trial = 1:nTrials
+                csStartFrame(trial) = find(led(trial,:),1);
+                %meanCSStartFrame = floor(mean(csStartFrame,1));
+                csStartOffset(trial) = csStartFrame(trial) - 101; %assuming ~200 fps
+                %fec
+                alignedFEC(trial,:) = fec(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                %puff
+                alignedPuff(trial,:) = puff(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                %led
+                alignedLED(trial,:) = led(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                %motion1
+                alignedMotion1(trial,:) = motion1(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                %motion2
+                alignedMotion1(trial,:) = motion2(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+            end
+            FEC = alignedFEC;
+            PUFF = alignedPuff;
+            LED = alignedLED;
+            MOTION1 = alignedMotion1;
+            MOTION2 = alignedMotion2;
+        else
+            FEC = fec;
+            PUFF = puff;
+            LED = led;
+            MOTION1 = motion1;
+            MOTION2 = motion2;
         end
         
         if plotFigures == 1
@@ -243,7 +290,7 @@ for mouse = 1:length(mice)
             clf
             %subplot(6,9,1:45)
             subplot(2,2,1)
-            imagesc(fec)
+            imagesc(FEC)
             colormap(jet)
             if sessionType == 9
                 title([mouseName ' S' num2str(session) ' | 250 ms Trace | FEC '], ...
@@ -267,7 +314,7 @@ for mouse = 1:length(mice)
             
             % Stimuli
             subplot(2,2,3)
-            stimuli = led+(2*puff);
+            stimuli = alignedLED+(2*alignedPuff);
             imagesc(stimuli)
             colormap(jet)
             title('Stimuli', ...
@@ -303,11 +350,11 @@ for mouse = 1:length(mice)
             
             % Shaded error bars
             notProbes = find(~probeTrials);
-            meanFEC = nanmean(fec(notProbes,:),1);
-            meanFEC_stddev = nanstd(fec(notProbes,:),1);
+            meanFEC = nanmean(FEC(notProbes,:),1);
+            meanFEC_stddev = nanstd(FEC(notProbes,:),1);
             probes = find(probeTrials);
-            meanFEC_probe = nanmean(fec(probes,:),1);
-            meanFEC_probe_stddev = nanstd(fec(probes,:),1);
+            meanFEC_probe = nanmean(FEC(probes,:),1);
+            meanFEC_probe_stddev = nanstd(FEC(probes,:),1);
             
             subplot(2,2,4)
             lineProps1.col{1} = 'red';
@@ -345,7 +392,13 @@ for mouse = 1:length(mice)
             % Save FEC curve
             save([saveFolder 'fec.mat' ], ...
                 'eyeClosure', 'fec', ...
-                'led', 'puff', 'probeTrials',...
+                'led', 'puff', ...
+                'motion1', 'motion2', ...
+                'csStartOffset', ...
+                'alignedFEC', 'alignedLED', 'alignedPuff',...
+                'alignedMotion1', 'alignedMotion2', ...
+                'probeTrials',...
+                'camera', 'microscope', ...
                 'crop', 'fecROI')
         end
         disp([dataset ' analyzed'])
