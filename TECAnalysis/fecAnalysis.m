@@ -9,7 +9,7 @@ clear all
 
 addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
-% Operations (0 == Don't Perform; 1 == Perform)
+%% Operations (0 == Don't Perform; 1 == Perform)
 saveData = 0;
 doFECAnalysis = 0;
 smoothenStimuli = 0;
@@ -17,38 +17,39 @@ alignFrames = 0;
 plotFigures = 1;
 playVideo = 0;
 
-% Dataset details
+%% Dataset details
 sessionType = 11;
 %mice = [7 8 9 10];
 mice = 11;
 nSessions = 2;
 nTrials = 61;
-
-% Video details
-nFrames = 270; %per trial; arbitrary
-
 %startSession = nSessions; %single sessions
 startSession = 1;
 startTrial = 1;
 startFrame = 1;
 
+% Video details
+nFrames = 270; %per trial; arbitrary
+
+%% Directories
 imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 motionDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
 performanceDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
-
 if ~exist(rawDirec, 'dir')
     warning('Raw directory not found')
     return
 end
 
+%% Plotting aesthetics
 fontSize = 16;
 lineWidth = 2;
 markerWidth = 7;
 transparency = 0.5;
 
+%%
 for mouse = 1:length(mice)
     mouseName = ['M' num2str(mice(mouse))];
     %mouseName = ['G5-' num2str(mice(mouse))];
@@ -153,7 +154,7 @@ for mouse = 1:length(mice)
                         camera(trial,frame) = str2double(sprintf(dataLine(commai(9)+1:commai(10)-1),'%s'));
                         microscope(trial,frame) = str2double(sprintf(dataLine(commai(10)+1:commai(11)-1),'%s'));
                     end
-                    
+
                     if playVideo == 1
                         if frame == startFrame
                             disp('Playing Video ...');
@@ -197,6 +198,7 @@ for mouse = 1:length(mice)
                             'FontSize', fontSize, ...
                             'FontWeight', 'bold')
                     end
+                    
                     %close(2)
                 end
                 
@@ -324,8 +326,8 @@ for mouse = 1:length(mice)
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             end
-            set(gca,'XTick', [45, 95, 145, 195, 245])
-            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
+            set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
             xlabel('Time/ms', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
@@ -347,8 +349,8 @@ for mouse = 1:length(mice)
             title('Stimuli', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
-            set(gca,'XTick', [45, 95, 145, 195, 245])
-            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
+            set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
             xlabel('Time/ms', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
@@ -399,8 +401,8 @@ for mouse = 1:length(mice)
             title('CS+US vs Probe Trials', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
-            set(gca,'XTick', [45, 95, 145, 195, 245])
-            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
+            set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
             xlabel('Time/ms', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')

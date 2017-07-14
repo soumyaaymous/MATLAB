@@ -7,38 +7,14 @@
 
 addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
-%Operations
+%% Operations
 saveData = 1;
 playVideo = 0;
 
-%Dataset details
+%%Dataset details
 sessionType = 11;
 mice = 11;
 nSessions = 2;
-
-%Crop parameters - please change to requirement
-xmin1 = 330;
-ymin1 = 40;
-width1 = 200;
-height1 = 120;
-crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
-
-%FEC parameters
-xmin2 = 118; % Don't change
-ymin2 = 5; % Don't change
-width2 = 30; % Don't change
-height2 = 120;% Don't change
-fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
-
-%Filters
-%m = 2; %for median filter
-%level = 0.01; %for binarization
-
-% %Contrast adjustment parameters
-% low_in = 0;
-% high_in = 1;
-% low_out = 0;
-% high_out = 1;
 
 nTrials = 1;
 startSession = nSessions;
@@ -51,6 +27,22 @@ trialDuration = 1.5; % in seconds
 %nFrames = floor(samplingRate*trialDuration); %per trial
 nFrames = 250;
 
+%%
+% Crop parameters - please change to requirement
+xmin1 = 330;
+ymin1 = 40;
+width1 = 200;
+height1 = 120;
+crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
+
+% FEC parameters
+xmin2 = 118; % Don't change
+ymin2 = 5; % Don't change
+width2 = 30; % Don't change
+height2 = 120;% Don't change
+fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
+
+%% Directories
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
@@ -60,8 +52,10 @@ if ~exist(rawDirec, 'dir')
     return
 end
 
+%% Plotting aesthetics
 fontSize = 16;
 
+%%
 for mouse = 1:length(mice)
     
     mouseName = ['M' num2str(mice(mouse))];
