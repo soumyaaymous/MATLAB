@@ -43,7 +43,7 @@ height2 = 120;% Don't change
 fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
 
 %% Directories
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/VideoAnalysis/ImageProcess/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 

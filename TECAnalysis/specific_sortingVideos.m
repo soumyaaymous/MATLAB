@@ -8,7 +8,7 @@ clear all
 % The variale raw is defined by the following dimensions: 276x276x3xnFrames
 % and is saved for every trial
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %Operations
 sortVideos = 0;

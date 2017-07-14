@@ -1,6 +1,8 @@
 % AUTHOR - Kambadur Ananthamurthy
 % PURPOSE - Plot FEC and motion data side by side
 
+
+
 clear all
 close all
 
@@ -10,7 +12,9 @@ sessionType = 9;
 nSessions = 1;
 startSession = 1;
 %saveDirec = '/Users/ananth/Desktop/Work/Analysis/Motion/';
-direc = '/Users/ananth/Desktop/Work/Analysis/';
+
+% !! Requires update:
+direc = '/Users/ananth/Desktop/Work/Analysis/Behaviour/';
 
 fontSize = 16;
 

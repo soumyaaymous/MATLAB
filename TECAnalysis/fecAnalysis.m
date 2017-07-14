@@ -32,12 +32,12 @@ startFrame = 1;
 nFrames = 270; %per trial; arbitrary
 
 %% Directories
-imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/VideoAnalysis/ImageProcess/';
+imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
-motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/MotionAnalysis/';
-performanceDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/PerformanceAnalysis/';
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/VideoAnalysis/FEC/';
+motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
+performanceDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
 if ~exist(rawDirec, 'dir')
     warning('Raw directory not found')
     return

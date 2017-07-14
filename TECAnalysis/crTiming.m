@@ -28,9 +28,9 @@ mice = [2 5];
 %startSession = 1;
 %startSession = nSessions;
 
-fecDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
-motionDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
-scoreDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
+fecDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
+motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
+scoreDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
 saveDirec = scoreDirec;
 
 % Protocol details

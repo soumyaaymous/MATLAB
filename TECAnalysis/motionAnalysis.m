@@ -9,7 +9,7 @@ tic
 clear all
 %close all
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions/')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions/'))
 
 %Please work with the data from all sessions of an animal, before proceeding to the next animal
 
@@ -21,8 +21,9 @@ saveData = 0;
 doMotionAnalysis = 0;
 plotFigures = 1;
 
-rawDirec = '/Users/ananth/Desktop/Work/Behaviour/Motion/';
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
+% !! Requires update:
+rawDirec = '/Users/ananth/Desktop/Work/Behaviour/FEC/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
 
 %Dataset details
 sessionType = 9;

@@ -11,7 +11,7 @@ tic
 clear all
 %close all
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions/')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions/'))
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 0;
@@ -34,8 +34,8 @@ allScores = nan(length(mice), nSessions);
 startSession = 1;
 %startSession = nSessions;
 
-fecDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
+fecDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
 
 % Protocol details
 preCSTime = 0.5; % in seconds

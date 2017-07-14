@@ -9,7 +9,7 @@ clear all
 
 % "raw" is defined as height x width x 3 x nFrames, and is saved for every trial
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %Operations
 sortVideos = 1;
@@ -34,7 +34,7 @@ startSession = nSessions; %single sessions
 %startSession = 1;
 startTrial = 2; % The first trial is only a dummy
 
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/Videos/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Videos/';
 direc = '/Users/ananth/Desktop/Work/Behaviour/Videos/';
 
 for mouse = 1:length(mice)

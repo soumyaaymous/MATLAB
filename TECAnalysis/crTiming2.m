@@ -9,7 +9,7 @@ tic
 clear all
 close all
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions/')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions/'))
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 0;
@@ -26,9 +26,9 @@ nSessions = 3;
 startSession = 1;
 %startSession = nSessions;
 
-fecDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/FEC/';
-motionDirec = '/Users/ananth/Desktop/Work/Analysis/MotionAnalysis/';
-scoreDirec = '/Users/ananth/Desktop/Work/Analysis/PerformanceAnalysis/';
+fecDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
+motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
+scoreDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
 saveDirec = scoreDirec;
 
 % Protocol details
