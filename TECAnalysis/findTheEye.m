@@ -5,13 +5,13 @@
 %clear all
 %close all
 
-addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %% Operations
 saveData = 1;
 playVideo = 0;
 
-%%Dataset details
+%% Dataset details
 sessionType = 11;
 mice = 11;
 nSessions = 2;
@@ -43,7 +43,7 @@ height2 = 120;% Don't change
 fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
 
 %% Directories
-saveDirec = '/Users/ananth/Desktop/Work/Analysis/VideoAnalysis/ImageProcess/';
+saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/VideoAnalysis/ImageProcess/';
 %rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
 rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 
