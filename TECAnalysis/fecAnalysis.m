@@ -11,24 +11,24 @@ addpath('/Users/ananth/Documents/MATLAB/CustomFunctions')
 
 % Operations (0 == Don't Perform; 1 == Perform)
 saveData = 0;
-doFECAnalysis = 1;
-smoothenStimuli = 1;
-alignFrames = 1;
+doFECAnalysis = 0;
+smoothenStimuli = 0;
+alignFrames = 0;
 plotFigures = 1;
 playVideo = 0;
 
 % Dataset details
-sessionType = 9;
+sessionType = 11;
 %mice = [7 8 9 10];
 mice = 11;
-nSessions = 3;
+nSessions = 2;
 nTrials = 61;
 
 % Video details
 nFrames = 270; %per trial; arbitrary
 
-startSession = nSessions; %single sessions
-%startSession = 5;
+%startSession = nSessions; %single sessions
+startSession = 1;
 startTrial = 1;
 startFrame = 1;
 
@@ -166,7 +166,7 @@ for mouse = 1:length(mice)
                         colormap(gray)
                         z = colorbar;
                         ylabel(z,'Intensity (A.U.)', ...
-                            'FontSize', fontSize,...
+                            'FontSize', fontSize, ...
                             'FontWeight', 'bold')
                         title(['Eye - ' mouseName ...
                             ' ST' num2str(sessionType) ' S' num2str(session) ...
@@ -216,6 +216,11 @@ for mouse = 1:length(mice)
             load([saveDirec mouseName '/' dataset '/fec.mat']);
             %load([motionDirec mouseName '/' dataset '/motion.mat']);
             %load([performanceDirec mouseName '/' dataset '/performance.mat']);
+            fec = FEC;
+            led = LED;
+            puff = PUFF;
+            motion1 = MOTION1;
+            motion2 = MOTION2;
         end
         
         if smoothenStimuli == 1
@@ -240,9 +245,11 @@ for mouse = 1:length(mice)
                     puff(trial,puffi(1):puffi(end)) = 1;
                 end
             end
+            disp('... smoothening complete!')
         end
         
         if alignFrames == 1
+            disp('Aligning frames ...')
             csStartFrame = nan(nTrials,1);
             csStartOffset = nan(nTrials,1);
             usStartFrame = nan(nTrials,1);
@@ -259,22 +266,38 @@ for mouse = 1:length(mice)
                 csStartFrame(trial) = find(led(trial,:),1);
                 %meanCSStartFrame = floor(mean(csStartFrame,1));
                 csStartOffset(trial) = csStartFrame(trial) - 101; %assuming ~200 fps
-                %fec
-                alignedFEC(trial,:) = fec(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
-                %puff
-                alignedPuff(trial,:) = puff(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
-                %led
-                alignedLED(trial,:) = led(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
-                %motion1
-                alignedMotion1(trial,:) = motion1(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
-                %motion2
-                alignedMotion1(trial,:) = motion2(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                if csStartOffset(trial) > 5
+                    disp(['The CS Start Offset for Trial ' num2str(trial) ' is > 5'])
+                    disp('Please consider skippping ...')
+                    %fec
+                    alignedFEC(trial,:) = fec(trial,(5:(end-6)));
+                    %puff
+                    alignedPuff(trial,:) = puff(trial,(5:(end-6)));
+                    %led
+                    alignedLED(trial,:) = led(trial,(5:(end-6)));
+                    %motion1
+                    alignedMotion1(trial,:) = motion1(trial,(5:(end-6)));
+                    %motion2
+                    alignedMotion1(trial,:) = motion2(trial,(5:(end-6)));
+                else
+                    %fec
+                    alignedFEC(trial,:) = fec(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                    %puff
+                    alignedPuff(trial,:) = puff(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                    %led
+                    alignedLED(trial,:) = led(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                    %motion1
+                    alignedMotion1(trial,:) = motion1(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                    %motion2
+                    alignedMotion1(trial,:) = motion2(trial,(5+csStartOffset(trial)):((end-6)+csStartOffset(trial)));
+                end
             end
             FEC = alignedFEC;
             PUFF = alignedPuff;
             LED = alignedLED;
             MOTION1 = alignedMotion1;
             MOTION2 = alignedMotion2;
+            disp('... frame alignment complete!')
         else
             FEC = fec;
             PUFF = puff;
@@ -297,13 +320,17 @@ for mouse = 1:length(mice)
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             else
-                title([' FEC | 350 ms Trace | ' mouseName ' S' num2str(session)], ...
+                title([' FEC | 500 ms Trace | ' mouseName ' S' num2str(session)], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             end
-            
-            set(gca,'XTick', [])
-            set(gca,'XTickLabel', [])
+            set(gca,'XTick', [45, 95, 145, 195, 245])
+            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            xlabel('Time/ms', ...
+                'FontSize', fontSize,...
+                'FontWeight', 'bold')
+            set(gca,'YTick',[10, 20, 30, 40, 50, 60])
+            set(gca,'YTickLabel',({10; 20; 30; 40; 50; 60}))
             ylabel('Trials', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
@@ -314,14 +341,19 @@ for mouse = 1:length(mice)
             
             % Stimuli
             subplot(2,2,3)
-            stimuli = alignedLED+(2*alignedPuff);
+            stimuli = LED+(2*PUFF);
             imagesc(stimuli)
             colormap(jet)
             title('Stimuli', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
-            set(gca,'XTick', [])
-            set(gca,'XTickLabel', [])
+            set(gca,'XTick', [45, 95, 145, 195, 245])
+            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            xlabel('Time/ms', ...
+                'FontSize', fontSize,...
+                'FontWeight', 'bold')
+            set(gca,'YTick',[10, 20, 30, 40, 50, 60])
+            set(gca,'YTickLabel',({10; 20; 30; 40; 50; 60}))
             ylabel('Trials', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
@@ -364,16 +396,19 @@ for mouse = 1:length(mice)
             hold on
             mseb([],meanFEC_probe, meanFEC_probe_stddev,...
                 lineProps2, transparency);
-            ylabel('FEC', ...
-                'FontSize', fontSize, ...
-                'FontWeight', 'bold')
             title('CS+US vs Probe Trials', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
-            set(gca,'XTick', [])
-            set(gca,'XTickLabel', [])
+            set(gca,'XTick', [45, 95, 145, 195, 245])
+            set(gca,'XTickLabel', ({250; 500; 750; 1000; 1250})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            xlabel('Time/ms', ...
+                'FontSize', fontSize,...
+                'FontWeight', 'bold')
             set(gca,'YTick',[0, 1])
             set(gca,'YTickLabel',({0; 1}))
+            ylabel('FEC', ...
+                'FontSize', fontSize, ...
+                'FontWeight', 'bold')
             set(gca,'FontSize', fontSize-2)
             legend('mean Paired +/- stddev', 'mean Probe +/- stddev','Location', 'northwest')
             
@@ -391,12 +426,9 @@ for mouse = 1:length(mice)
             
             % Save FEC curve
             save([saveFolder 'fec.mat' ], ...
-                'eyeClosure', 'fec', ...
-                'led', 'puff', ...
-                'motion1', 'motion2', ...
-                'csStartOffset', ...
-                'alignedFEC', 'alignedLED', 'alignedPuff',...
-                'alignedMotion1', 'alignedMotion2', ...
+                'eyeClosure', 'FEC', ...
+                'LED', 'PUFF', ...
+                'MOTION1', 'MOTION2', ...
                 'probeTrials',...
                 'camera', 'microscope', ...
                 'crop', 'fecROI')

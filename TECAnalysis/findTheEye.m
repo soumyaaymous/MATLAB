@@ -12,13 +12,13 @@ saveData = 1;
 playVideo = 0;
 
 %Dataset details
-sessionType = 9;
+sessionType = 11;
 mice = 11;
-nSessions = 3;
+nSessions = 2;
 
 %Crop parameters - please change to requirement
-xmin1 = 200;
-ymin1 = 45;
+xmin1 = 330;
+ymin1 = 40;
 width1 = 200;
 height1 = 120;
 crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
