@@ -11,9 +11,9 @@ addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %% Operations (0 == Don't Perform; 1 == Perform)
 saveData = 1;
-doFECAnalysis = 1;
-smoothenStimuli = 1;
-alignFrames = 1;
+doFECAnalysis = 0;
+smoothenStimuli = 0;
+alignFrames = 0; %Turn off if saved data is already aligned.
 plotFigures = 1;
 playVideo = 0;
 
@@ -22,7 +22,7 @@ sessionType = 1;
 %mice = [7 8 9 10];
 mice = 13;
 nSessions = 1;
-nTrials = 61;
+nTrials = 61; %default is 61
 %startSession = nSessions; %single sessions
 startSession = 1;
 startTrial = 1;
@@ -154,7 +154,7 @@ for mouse = 1:length(mice)
                         camera(trial,frame) = str2double(sprintf(dataLine(commai(9)+1:commai(10)-1),'%s'));
                         microscope(trial,frame) = str2double(sprintf(dataLine(commai(10)+1:commai(11)-1),'%s'));
                     end
-
+                    
                     if playVideo == 1
                         if frame == startFrame
                             disp('Playing Video ...');
@@ -314,9 +314,11 @@ for mouse = 1:length(mice)
             set(fig4,'Position', [100, 100, 1200, 700]);
             clf
             %subplot(6,9,1:45)
-            subplot(2,2,1)
+            subFig1 = subplot(2,2,1);
             imagesc(FEC)
-            colormap(jet)
+            caxis([0 1])
+            colormap(subFig1, jet)
+            %freezeColors
             if sessionType == 1
                 title([mouseName ' S' num2str(session) ' | 250 ms Trace | FEC '], ...
                     'FontSize', fontSize, ...
@@ -330,15 +332,15 @@ for mouse = 1:length(mice)
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             elseif sessionType == 4
-                title([mouseName ' S' num2str(session) ' | CS Only '], ...
+                title([mouseName ' S' num2str(session) ' | CS-Only | FEC'], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             elseif sessionType == 5
-                title([mouseName ' S' num2str(session) ' | Spontaneous '], ...
+                title([mouseName ' S' num2str(session) ' | Spontaneous | FEC '], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             else
-                title([' "?" | ' mouseName ' S' num2str(session)], ...
+                title([ mouseName ' S' num2str(session) ' | "?" | FEC'], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             end
@@ -353,15 +355,18 @@ for mouse = 1:length(mice)
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
             z = colorbar;
+            %cbfreeze(z)
             set(z,'YTick',[0, 1])
             set(z,'YTickLabel',({'Open', 'Closed'}))
             set(gca,'FontSize', fontSize-2)
             
             % Stimuli
-            subplot(2,2,3)
-            stimuli = LED+(2*PUFF);
+            subFig2 = subplot(2,2,3);
+            stimuli = (1*LED)+(2*PUFF);
             imagesc(stimuli)
-            colormap(jet)
+            caxis([0 2])
+            colormap(subFig2, cool)
+            %freezeColors
             title('Stimuli', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
@@ -376,15 +381,17 @@ for mouse = 1:length(mice)
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
             z = colorbar;
+            %cbfreeze(z)
             set(z,'YTick',[0, 1, 2])
             set(z,'YTickLabel',({'Off'; 'LED'; 'Puff'}))
             set(gca,'FontSize', fontSize-2)
             
-            
             % Probe Trials
-            subplot(2,2,2)
+            subFig3 = subplot(2,2,2);
             imagesc(probeTrials)
-            colormap(jet)
+            caxis([0 1])
+            colormap(subFig3, gray)
+            %freezeColors
             title('Probe Trials', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
@@ -394,6 +401,7 @@ for mouse = 1:length(mice)
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
             z = colorbar;
+            %cbfreeze(z)
             set(z,'YTick',[0, 1])
             set(z,'YTickLabel',({'No'; 'Yes'}))
             set(gca,'FontSize', fontSize-2)
@@ -414,6 +422,7 @@ for mouse = 1:length(mice)
             hold on
             mseb([],meanFEC_probe, meanFEC_probe_stddev,...
                 lineProps2, transparency);
+            ylim([0 1]);
             title('CS+US vs Probe Trials', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
@@ -422,8 +431,6 @@ for mouse = 1:length(mice)
             xlabel('Time/ms', ...
                 'FontSize', fontSize,...
                 'FontWeight', 'bold')
-            set(gca,'YTick',[0, 1])
-            set(gca,'YTickLabel',({0; 1}))
             ylabel('FEC', ...
                 'FontSize', fontSize, ...
                 'FontWeight', 'bold')
