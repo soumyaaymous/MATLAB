@@ -19,7 +19,7 @@ plotFigures = 1;
 % Dataset details
 sessionType = 11;
 %mice = [1 2 3 4 5];
-mice = 2;
+mice = 11;
 
 nSessions = 3;
 

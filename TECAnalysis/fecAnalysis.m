@@ -10,18 +10,18 @@ clear all
 addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %% Operations (0 == Don't Perform; 1 == Perform)
-saveData = 0;
-doFECAnalysis = 0;
-smoothenStimuli = 0;
-alignFrames = 0;
+saveData = 1;
+doFECAnalysis = 1;
+smoothenStimuli = 1;
+alignFrames = 1;
 plotFigures = 1;
 playVideo = 0;
 
 %% Dataset details
-sessionType = 11;
+sessionType = 1;
 %mice = [7 8 9 10];
-mice = 11;
-nSessions = 2;
+mice = 13;
+nSessions = 1;
 nTrials = 61;
 %startSession = nSessions; %single sessions
 startSession = 1;
@@ -250,7 +250,7 @@ for mouse = 1:length(mice)
             disp('... smoothening complete!')
         end
         
-        if alignFrames == 1
+        if alignFrames == 1 && sessionType <5
             disp('Aligning frames ...')
             csStartFrame = nan(nTrials,1);
             csStartOffset = nan(nTrials,1);
@@ -311,18 +311,34 @@ for mouse = 1:length(mice)
         if plotFigures == 1
             % FEC plots
             fig4 = figure(4);
-            set(fig4,'Position', [100, 100, 1200, 800]);
+            set(fig4,'Position', [100, 100, 1200, 700]);
             clf
             %subplot(6,9,1:45)
             subplot(2,2,1)
             imagesc(FEC)
             colormap(jet)
-            if sessionType == 9
+            if sessionType == 1
                 title([mouseName ' S' num2str(session) ' | 250 ms Trace | FEC '], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
+            elseif sessionType == 2
+                title([mouseName ' S' num2str(session) ' | 350 ms Trace | FEC '], ...
+                    'FontSize', fontSize, ...
+                    'FontWeight', 'bold')
+            elseif sessionType == 3
+                title([mouseName ' S' num2str(session) ' | 500 ms Trace | FEC '], ...
+                    'FontSize', fontSize, ...
+                    'FontWeight', 'bold')
+            elseif sessionType == 4
+                title([mouseName ' S' num2str(session) ' | CS Only '], ...
+                    'FontSize', fontSize, ...
+                    'FontWeight', 'bold')
+            elseif sessionType == 5
+                title([mouseName ' S' num2str(session) ' | Spontaneous '], ...
+                    'FontSize', fontSize, ...
+                    'FontWeight', 'bold')
             else
-                title([' FEC | 500 ms Trace | ' mouseName ' S' num2str(session)], ...
+                title([' "?" | ' mouseName ' S' num2str(session)], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             end

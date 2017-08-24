@@ -20,8 +20,10 @@ plotFigures = 1;
 
 % Dataset details
 sessionType = 11;
+%mice = [1 2 3 4 5 7 8 9 10];
 mice = [1 2 3 4 5];
-%mice = 2;
+%mice = [7 8 9 10];
+%mice = 11;
 %nSessions = 4;
 if sessionType == 9
     nSessions = 12;
@@ -53,6 +55,7 @@ allDisqualified = nan(length(mice),nSessions);
 fontSize = 20;
 lineWidth = 3;
 markerSize = 8;
+samplingRate = 200; %Hz
 
 for mouse = 1:length(mice)
     mouseName = ['M' num2str(mice(mouse))];
@@ -61,7 +64,13 @@ for mouse = 1:length(mice)
     disqualifications = nan(nSessions,1);
     
     for session = startSession:nSessions
-        dataset = ['Mouse' mouseName '_SessionType' num2str(sessionType) '_Session' num2str(session)];
+        if mice(mouse) < 6
+            dataset = ['Mouse' mouseName ...
+                '_SessionType' num2str(sessionType) ...
+                '_Session' num2str(session)];
+        else
+            dataset = [mouseName '_' num2str(sessionType) '_' num2str(session)];
+        end
         disp(['Working on ' dataset])
         
         if scorePerformance == 1
@@ -69,7 +78,11 @@ for mouse = 1:length(mice)
             
             % Load FEC data
             try
-                load([fecDirec 'Mouse' mouseName '/' dataset '/fec.mat'])
+                if mice(mouse) < 6
+                    load([fecDirec 'Mouse' mouseName '/' dataset '/fec.mat'])
+                else
+                    load([fecDirec mouseName '/' dataset '/fec.mat'])
+                end
             catch
                 warning('Unable to find FEC data')
                 continue
@@ -80,6 +93,9 @@ for mouse = 1:length(mice)
                 traceTime = 0.25; % in seconds
             elseif sessionType == 11
                 traceTime = 0.35; % in seconds
+            end
+            if mice(mouse) > 10
+                fec = FEC;
             end
             
             nTrials = size(fec,1);
@@ -106,7 +122,15 @@ for mouse = 1:length(mice)
                     hit = 0;
                 else
                     reject = 0;
-                    hit = kstest2(x1, x2, 'Alpha', alpha);
+                    try
+                        hit = kstest2(x1, x2, 'Alpha', alpha);
+                    catch
+                        warning(['Error with Trial ' num2str(trial)])
+                        reject = 1;
+                        rejectedTrials = [rejectedTrials trial];
+                        disp(['Trial ' num2str(trial) ' rejected'])
+                        hit = 0;
+                    end
                     if hit == 1
                         hitTrials = [hitTrials trial];
                     end
@@ -188,53 +212,53 @@ for mouse = 1:length(mice)
         axis([1 nSessions -5 100]);
         set(gca,'FontSize', fontSize)
         if mouse == length(mice)
-            hold on
-            plot(learningLine*learningCutoff,'--black')
+            %hold on
+            %plot(learningLine*learningCutoff,'--black')
             %legend('M1', 'M2', 'M3', 'M4', 'M5', 'Learnt') % Later, make this a cell array
         end
         
         print('/Users/ananth/Desktop/figs/scores',...
             '-dpng');
         
-        figure(2)
-        if sessionType == 9
-            subplot(1,5,1:4)
-            title('Disqualifications - 250 ms ISI', ...
-                'FontSize', fontSize, ...
-                'FontWeight', 'bold')
-            ylabel('Disqualified Trials/Total Trials (%)',...
-                'FontSize', fontSize,...
-                'FontWeight', 'bold')
-            %legend('M1', 'M2', 'M3', 'M4', 'M5', 'Learning') % Later, make this a cell array
-        else
-            subplot(1,5,5)
-            title('350 ms ISI', ...
-                'FontSize', fontSize, ...
-                'FontWeight', 'bold')
-            %             legend('M1', 'M2', 'M3', 'M4', 'M5', 'Learning') % Later, make this a cell array
-            %             ylabel('Performance (%)',...
-            %             'FontSize', fontSize,...
-            %             'FontWeight', 'bold')
-        end
-        hold on
-        plot(allDisqualified(mouse,:), '-*', ...
-            'LineWidth', lineWidth, ...
-            'MarkerSize', markerSize)
-        xlabel('Sessions', ...
-            'FontSize', fontSize,...
-            'FontWeight', 'bold')
-        set(gca,'FontSize', fontSize)
-        axis([1 nSessions 0 100]);
-        set(gca,'YTick', [0 25 50 75 100])
-        set(gca,'YTickLabel',[0 25 50 75 100])
-        if mouse == length(mice)
-            hold on
-            plot(disqualifyLine*disqualificationCutoff,'--black')
-            %legend('M1', 'M2', 'M3', 'M4', 'M5', 'Disqualified') % Later, make this a cell array
-        end
-        
-        print('/Users/ananth/Desktop/figs/disqualifications',...
-            '-dpng');
+%         figure(2)
+%         if sessionType == 9
+%             subplot(1,5,1:4)
+%             title('Disqualifications - 250 ms ISI', ...
+%                 'FontSize', fontSize, ...
+%                 'FontWeight', 'bold')
+%             ylabel('Disqualified Trials/Total Trials (%)',...
+%                 'FontSize', fontSize,...
+%                 'FontWeight', 'bold')
+%             %legend('M1', 'M2', 'M3', 'M4', 'M5', 'Learning') % Later, make this a cell array
+%         else
+%             subplot(1,5,5)
+%             title('350 ms ISI', ...
+%                 'FontSize', fontSize, ...
+%                 'FontWeight', 'bold')
+%             %             legend('M1', 'M2', 'M3', 'M4', 'M5', 'Learning') % Later, make this a cell array
+%             %             ylabel('Performance (%)',...
+%             %             'FontSize', fontSize,...
+%             %             'FontWeight', 'bold')
+%         end
+%         hold on
+%         plot(allDisqualified(mouse,:), '-*', ...
+%             'LineWidth', lineWidth, ...
+%             'MarkerSize', markerSize)
+%         xlabel('Sessions', ...
+%             'FontSize', fontSize,...
+%             'FontWeight', 'bold')
+%         set(gca,'FontSize', fontSize)
+%         axis([1 nSessions 0 100]);
+%         set(gca,'YTick', [0 25 50 75 100])
+%         set(gca,'YTickLabel',[0 25 50 75 100])
+%         if mouse == length(mice)
+%             hold on
+%             plot(disqualifyLine*disqualificationCutoff,'--black')
+%             %legend('M1', 'M2', 'M3', 'M4', 'M5', 'Disqualified') % Later, make this a cell array
+%         end
+%         
+%         print('/Users/ananth/Desktop/figs/disqualifications',...
+%             '-dpng');
     end
 end
 toc

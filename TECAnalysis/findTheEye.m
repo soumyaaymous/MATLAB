@@ -12,9 +12,9 @@ saveData = 1;
 playVideo = 0;
 
 %% Dataset details
-sessionType = 11;
-mice = 11;
-nSessions = 2;
+sessionType = 1;
+mice = 13;
+nSessions = 1;
 
 nTrials = 1;
 startSession = nSessions;
@@ -29,13 +29,13 @@ nFrames = 250;
 
 %%
 % Crop parameters - please change to requirement
-xmin1 = 330;
-ymin1 = 40;
+xmin1 = 220;
+ymin1 = 20;
 width1 = 200;
 height1 = 120;
 crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
 
-% FEC parameters
+% FEC parameters - please don't change, unless absolutely necessary
 xmin2 = 118; % Don't change
 ymin2 = 5; % Don't change
 width2 = 30; % Don't change
