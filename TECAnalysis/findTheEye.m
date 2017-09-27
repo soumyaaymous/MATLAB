@@ -13,12 +13,12 @@ playVideo = 0;
 
 %% Dataset details
 sessionType = 5;
-mice = 12;
+mice = 15;
 nSessions = 1;
 
-nTrials = 1;
+nTrials = 2;
 startSession = nSessions;
-startTrial = 1;
+startTrial = nTrials;
 startFrame = 1;
 
 %Video details
@@ -29,8 +29,8 @@ nFrames = 250;
 
 %%
 % Crop parameters - please change to requirement
-xmin1 = 340;
-ymin1 = 40;
+xmin1 = 160;
+ymin1 = 45;
 width1 = 200;
 height1 = 120;
 crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
@@ -69,7 +69,6 @@ for mouse = 1:length(mice)
         if playVideo == 1
             disp('Playing Video ...');
             for trial = startTrial:nTrials
-                
                 if trial <10
                     file = [rawDirec mouseName '/' dataset, ...
                         '/trial_00' num2str(trial) '.tif'];
@@ -99,7 +98,7 @@ for mouse = 1:length(mice)
                     set(fig2,'Position', [100, 100, 600, 400]);
                     subplot(1,3,1)
                     imagesc(croppedImage)
-                    colormap(gray)
+                    %colormap(gray)
                     z = colorbar;
                     ylabel(z,'Intensity (A.U.)', ...
                         'FontSize', fontSize,...
@@ -113,7 +112,7 @@ for mouse = 1:length(mice)
                     
                     subplot(1,3,2)
                     imagesc(fecImage)
-                    colormap(gray)
+                    %colormap(gray)
                     z = colorbar;
                     ylabel(z,'Intensity (A.U.)', ...
                         'FontSize', fontSize, ...
@@ -136,7 +135,7 @@ for mouse = 1:length(mice)
             end
         else
             %1 - Load the reference image (first image in Trial 1)
-            file = [rawDirec mouseName '/' dataset '/trial_001.tif'];
+            file = [rawDirec mouseName '/' dataset '/trial_00' num2str(startTrial) '.tif'];
             refImage = double(imread(file, 1));
             
             %2 - Crop image - for eye (absolute coordinates)
