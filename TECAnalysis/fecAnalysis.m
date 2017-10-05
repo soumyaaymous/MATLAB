@@ -6,7 +6,6 @@
 tic
 clear all
 %close all
-
 addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
 %% Operations (0 == Don't Perform; 1 == Perform)
@@ -18,11 +17,11 @@ plotFigures = 1;
 playVideo = 0;
 
 %% Dataset details
-sessionType = 5;
+sessionType = 1;
 %mice = [7 8 9 10];
-mice = 15;
-nSessions = 1;
-nTrials = 30; %default is 61
+mice = 16;
+nSessions = 3;
+nTrials = 60; %default is 60
 startSession = nSessions; %single sessions
 %startSession = 1;
 startTrial = 1;
@@ -33,8 +32,8 @@ nFrames = 270; %per trial; arbitrary
 
 %% Directories
 imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
-%rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
-rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
+rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+%rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
 performanceDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
@@ -131,8 +130,7 @@ for mouse = 1:length(mice)
                         %{
                         DATALINE:
                         1. msg_ (timestamp1)
-                        2. "%lu,%d,%d,%d,%d,%d,%d,%d,%d,
-%s" (timestamp2)
+                        2. "%lu,%d,%d,%d,%d,%d,%d,%d,%d,%s" (timestamp2)
                         3. timestamp3 (arduino)
                         4. trial_count_
                         5. puff
@@ -147,6 +145,7 @@ for mouse = 1:length(mice)
                         14. timestamp5
                         15. speed (10x normalized)
                         16. direction
+                        17. Dilawar's measure of eye-blinks
                         %}                        
                         timestamp3(trial,frame) = str2double(sprintf(dataLine(commai(2)+1:commai(3)-1),'%s'));
                         trialCount(trial,frame) = str2double(sprintf(dataLine(commai(3)+1:commai(4)-1),'%s'));
@@ -220,7 +219,7 @@ for mouse = 1:length(mice)
                     probeTrials(trial,1) = 1;
                     disp('Probe trial found!')
                 end
-                
+               
                 disp('... done')
             end
         else
@@ -278,7 +277,7 @@ for mouse = 1:length(mice)
             for trial = 1:nTrials
                 csStartFrame(trial) = find(ledCS(trial,:),1);
                 csStartOffset(trial) = csStartFrame(trial) - 101; %assuming ~200 fps (CS starts at 500 ms)
-                if csStartOffset(trial) > 5
+                if abs(csStartOffset(trial)) > 4
                     disp(['The CS Start Offset for Trial ' num2str(trial) ' is > 5'])
                     disp('Please consider skippping ...')
                     %fec
