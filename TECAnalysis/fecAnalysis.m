@@ -20,7 +20,7 @@ playVideo = 0;
 sessionType = 1;
 %mice = [7 8 9 10];
 mice = 16;
-nSessions = 3;
+nSessions = 6;
 nTrials = 60; %default is 60
 startSession = nSessions; %single sessions
 %startSession = 1;
@@ -28,12 +28,12 @@ startTrial = 1;
 startFrame = 1;
 
 % Video details
-nFrames = 270; %per trial; arbitrary
+nFrames = 270; %per trial;
 
 %% Directories
 imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
-rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
-%rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
+%rawDirec = '/Users/ananth/Desktop/Work/Behaviour/DATA/';
+rawDirec = '/Volumes/ananthamurthy/EyeBlinkBehaviour/';
 motionDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Motion/';
 performanceDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/Performance/';
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/FEC/';
@@ -332,7 +332,7 @@ for mouse = 1:length(mice)
         if plotFigures == 1
             % FEC plots
             fig4 = figure(4);
-            set(fig4,'Position', [100, 100, 1200, 700]);
+            set(fig4,'Position', [100, 100, 1200, 500]);
             clf
             %subplot(6,9,1:45)
             %subFig1 = subplot(3,2,1);

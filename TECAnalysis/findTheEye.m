@@ -13,10 +13,10 @@ playVideo = 0;
 
 %% Dataset details
 sessionType = 1;
-mice = 15;
-nSessions = 2;
+mice = 16;
+nSessions = 6;
 
-nTrials = 2;
+nTrials = 1; %default is 1
 startSession = nSessions;
 startTrial = nTrials;
 startFrame = 1;
@@ -26,11 +26,12 @@ startFrame = 1;
 trialDuration = 1.5; % in seconds
 %nFrames = floor(samplingRate*trialDuration); %per trial
 nFrames = 250;
+percentile = 60; %for binarization
 
 %%
 % Crop parameters - please change to requirement
-xmin1 = 240;
-ymin1 = 70;
+xmin1 = 245;
+ymin1 = 63;
 width1 = 200;
 height1 = 120;
 crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
@@ -39,7 +40,7 @@ crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
 xmin2 = 118; % Don't change
 ymin2 = 5; % Don't change
 width2 = 30; % Don't change
-height2 = 120;% Don't change
+height2 = 120;% Don't change; currently set to height1.
 fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
 
 %% Directories
@@ -89,7 +90,8 @@ for mouse = 1:length(mice)
                     
                     %4 - Binarize
                     if frame == startFrame
-                        threshold = prctile(reshape(fecImage,[((height2+1)*(width2+1)),1]),50);
+                        fecImage_vector = reshape(fecImage,1,[]);
+                        threshold = prctile(fecImage_vector,percentile);
                     end
                     binImage = fecImage > threshold; %binarize
                     
@@ -147,7 +149,7 @@ for mouse = 1:length(mice)
             %4 - Binarize
             %threshold = prctile(reshape(fecImage,[((height2+1)*(width2+1)),1]),50);
             fecImage_vector = reshape(fecImage,1,[]);
-            threshold = prctile(fecImage_vector,50);
+            threshold = prctile(fecImage_vector,percentile);
             binImage = fecImage > threshold; %binarize
             
             fig1 = figure(1);
