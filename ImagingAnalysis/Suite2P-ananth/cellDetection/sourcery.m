@@ -194,7 +194,7 @@ while 1
         axis off
         
         fig2 = figure(2);
-        set(fig2,'Position', [100, 100, 1200, 500]);
+        set(fig2,'Position', [700, 700, 1200, 500]);
         [~, iclust, lam] = drawClusters(ops, r, mPix, mLam, Ly, Lx, db);
         
         drawnow

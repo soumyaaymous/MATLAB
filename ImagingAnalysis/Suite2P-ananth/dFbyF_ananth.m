@@ -1,5 +1,4 @@
-%close all
-%%
+function [dfbf, baslines, dfbf_allTrials]=
 fontSize = 16;
 lineWidth = 2;
 markerWidth = 7;
@@ -29,24 +28,24 @@ trialDuration = db.trialDuration; %seconds
 frameRate = round((nFrames/trialDuration),1);
 
 %%
-cabase = nan(nCells, nTrials);
-calbdf = nan(nCells, nTrials, nFrames);
-calbdf_allTrials = nan(nCells,nTrials*nFrames);
+baselines = nan(nCells, nTrials);
+dfbf = nan(nCells, nTrials, nFrames);
+dfbf_allTrials = nan(nCells,nTrials*nFrames);
 
-cal = nan(nCells, nTrials, nFrames);
+raw = nan(nCells, nTrials, nFrames);
 for cell = 1:nCells
     for trial = 1:nTrials
         count = trial-1;
         
         %First, separate out the trials, to do a proper dF/F
-        cal(cell, trial, :) = Fcell{1,1}(cell,((count*nFrames)+1:(count*nFrames)+nFrames));
+        raw(cell, trial, :) = Fcell{1,1}(cell,((count*nFrames)+1:(count*nFrames)+nFrames));
         
         %* 10 percentile value correction
-        cabase(cell,trial) = prctile(squeeze(cal(cell, trial, :)), 10);
-        calbdf(cell, trial, :) = ((cal(cell, trial, :) - cabase(cell,trial))/cabase(cell,trial)); % Change in Fluorescence relative to baseline
+        baselines(cell,trial) = prctile(squeeze(raw(cell, trial, :)), 10);
+        dfbf(cell, trial, :) = ((raw(cell, trial, :) - baselines(cell,trial))/baselines(cell,trial)); % Change in Fluorescence relative to baseline
         
         % All trials
-        calbdf_allTrials(cell,(((count*nFrames)+1):(count*nFrames)+nFrames))=calbdf(cell,trial,:);
+        calbdf_allTrials(cell,(((count*nFrames)+1):(count*nFrames)+nFrames))=dfbf(cell,trial,:);
     end  % calbdf
 end
 

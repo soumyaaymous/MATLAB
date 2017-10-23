@@ -1,5 +1,12 @@
+% Requirements - dodFbyF.m
+%                getSessionDetails.m
+%                findWindow.m
+%                plotdFbyF.m
+% These may be found in "CustomFunctions"
+%tic
 close all
-%clear all
+clear
+addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions')) % my custom functions
 %% SET ALL DEFAULT OPTIONS HERE
 
 % UPDATE Christmas 2016: number of clusters determined automatically, but
@@ -7,12 +14,12 @@ close all
 % db(iexp).diameter, or ops0.diameter
 
 % check out the README file for detailed instructions (and extra options)
-addpath('/Users/ananth/Documents/MATLAB/Suite2P/localCopies') % add the path to your make_db file
+addpath('/Users/ananth/Documents/MATLAB/ImagingAnalysis/Suite2P-ananth/localCopies') % add the path to your make_db file
 
 % overwrite any of these default options in your make_db file for individual experiments
 make_db; % RUN YOUR OWN MAKE_DB SCRIPT TO RUN HERE
 
-ops0.toolbox_path = '/Users/ananth/Documents/MATLAB/Suite2P/';
+ops0.toolbox_path = '/Users/ananth/Documents/MATLAB/ImagingAnalysis/Suite2P-ananth/';
 if exist(ops0.toolbox_path, 'dir')
     addpath(genpath(ops0.toolbox_path)) % add local path to the toolbox
 else
@@ -20,7 +27,6 @@ else
 end
 
 % mex -largeArrayDims SpikeDetection/deconvL0.c (or .cpp) % MAKE SURE YOU COMPILE THIS FIRST FOR DECONVOLUTION
-
 ops0.useGPU                 = 0; % if you can use an Nvidia GPU in matlab this accelerates registration approx 3 times. You only need the Nvidia drivers installed (not CUDA).
 ops0.fig                    = 1; % turn off figure generation with 0
 % ops0.diameter               = 12; % most important parameter. Set here, or individually per experiment in make_db file
@@ -65,34 +71,124 @@ ops0.redmax                 = 1; % the higher the max the more NON-red cells
 %keyboard
 %% RUN THE PIPELINE HERE
 db0 = db;
-
-for iexp = 1 %[3:length(db) 1:2]
-    run_pipeline(db(iexp), ops0);
-    % deconvolved data into (dat.)cl.dcell, and neuropil subtraction coef
-    % commented out for now, back up ~ 10 May
-    % add_deconvolution(ops0, db0(iexp));
-    
-    % add red channel information (if it exists)
-    if isfield(db0,'expred') && ~isempty(db0(iexp).expred)
-        ops0.nchannels_red = db0(iexp).nchannels_red;
+for iexp = 1:length(db) %[3:length(db) 1:2]
+    disp(['Analyzing ' ...
+        db(iexp).mouse_name '_' ...
+        num2str(db(iexp).sessionType) '_' ...
+        num2str(db(iexp).session) ...
+        ' - Date: ' db(iexp).date])
+    if 0
+        run_pipeline(db(iexp), ops0);
+        % deconvolved data into (dat.)cl.dcell, and neuropil subtraction coef
+        % commented out for now, back up ~ 10 May
+        % add_deconvolution(ops0, db0(iexp));
         
-        run_REDaddon(iexp, db0, ops0) ; % create redcell array
-        DetectRedCells; % fills dat.cl.redcell and dat.cl.notred
+        % add red channel information (if it exists)
+        if isfield(db0,'expred') && ~isempty(db0(iexp).expred)
+            ops0.nchannels_red = db0(iexp).nchannels_red;
+            
+            run_REDaddon(iexp, db0, ops0) ; % create redcell array
+            DetectRedCells; % fills dat.cl.redcell and dat.cl.notred
+        end
+        %load(sprintf('%s/F_%s_%s_plane%d.mat', ops0.ResultsSavePath, db(iexp).mouse_name, db(iexp).date, db(iexp).nplanes))
+        %disp('Suite2P pipeline complete!')
     end
-    %load(sprintf('%s/F_%s_%s_plane%d.mat', ops0.ResultsSavePath, db.mouse_name, db.date, db.nplanes))
+    
     % Manual curation
     %new_main
     
+    %Custom Section
+    if ops0.fig
+        figureDetails.fontSize = 16;
+        figureDetails.lineWidth = 2;
+        figureDetails.markerWidth = 7;
+        figureDetails.transparency = 0.5;
+    end
+    
+    trialDetails = getTrialDetails(db(iexp));
+    
     % dF/F - custom
-    dFbyF_ananth
+    %Fluorescence Data
+    load(['Users/ananth/Desktop/Work/Analysis/Imaging/' ...
+        db(iexp).mouse_name '/' db(iexp).date '/' num2str(db(iexp).expts) ...
+        '/F_' db(iexp).mouse_name '_' db(iexp).date '_plane' num2str(db(iexp).nplanes) '.mat'])
     
-    % Sorting - custom
-    trialPhase =  'CS-Trace-US';
-    Data = calbdf(:,:,window); % cells, trials, frames
-    sortedData = sortData(Data, plotFigures);
+    %Registration Options
+    load(['Users/ananth/Desktop/Work/Analysis/Imaging/' ...
+        db(iexp).mouse_name '/' db(iexp).date '/' num2str(db(iexp).expts) ...
+        '/regops_' db(iexp).mouse_name '_' db(iexp).date '.mat'])
     
-    sequenceDetection
+    [dfbf, baselines, dfbf_2D] = dodFbyF(db(iexp), Fcell{1,1});
+    
+    if ops0.fig
+        %Calcium activity from all trials
+        fig4 = figure(4);
+        clf
+        set(fig4,'Position',[300,300,1200,500])
+        %subFig1 = subplot(2,1,1);
+        %plot unsorted data
+        plotdFbyF(db(iexp), dfbf_2D, trialDetails, 'Frames', 'Unsorted Cells', figureDetails, 1)
+        %subFig2 = subplot(2,1,2);
+        %plot sorted data
+        %plotdFbyF(db(iexp), dfbf_2D_sorted, trialDetails, 'Frames', 'Sorted Cells', figureDetails, 1)
+        print(['/Users/ananth/Desktop/figs/calciumActivity/dfbf_allTrials_' ...
+            db(iexp).mouse_name '_' num2str(db(iexp).sessionType) '_' num2str(db(iexp).session)],...
+            '-djpeg');
+    end
+    
+    % Accept only reliable time cells
+    % Tuning and time field fidelity
+    trialPhase = 'CS-Trace-US'; % Crucial
+    clear window %for sanity
+    window = findWindow(trialPhase, trialDetails);
+    timeLockedCells = getTimeLockedCellList(dfbf, 5000, 'Minima', 1, window);
+    
+    % Sorting
+    %trialPhase = 'CS-Trace-US';
+    dfbf_timeLockedCells = dfbf(timeLockedCells,:,:);
+    dfbf_2D_timeLockedCells = dfbf_2D(timeLockedCells,:,:);
+    
+    if isempty(timeLockedCells)
+        disp('No time cells found')
+    else
+        [sortedCells, peakIndices] = sortData(dfbf_timeLockedCells(:,:,window), 1);
+        dfbf_sorted_timeCells = dfbf_timeLockedCells(sortedCells,:,:);
+        dfbf_2D_sorted_timeCells = dfbf_2D_timeLockedCells(sortedCells,:);
+        
+        if ops0.fig
+            % Sorting based Sequences - plotting
+            trialPhase = 'CS-Trace-US'; % NOTE: this update to "trialPhase" is only for plots
+            clear window %for sanity
+            window = findWindow(trialPhase, trialDetails);
+            
+            fig5 = figure(5);
+            set(fig5,'Position', [700, 700, 1200, 500]);
+            subFig1 = subplot(1,2,1);
+            %plot unsorted data
+            plotSequences(db(iexp), dfbf_timeLockedCells(:,:,window), trialPhase, 'Frames', 'Unsorted Cells', figureDetails, 1)
+            subFig2 = subplot(1,2,2);
+            %plot sorted data
+            plotSequences(db(iexp), dfbf_sorted_timeCells(:,:,window), trialPhase, 'Frames', 'Sorted Cells', figureDetails, 1)
+            print(['/Users/ananth/Desktop/figs/sort/timeCells_allTrialsAvg_sorted_' ...
+                db(iexp).mouse_name '_' num2str(db(iexp).sessionType) '_' num2str(db(iexp).session)],...
+                '-djpeg');
+            
+            fig6 = figure(6);
+            clf
+            set(fig6,'Position',[300,300,1200,500])
+            %plot sorted data
+            plotdFbyF(db(iexp), dfbf_2D_sorted_timeCells, trialDetails, 'Frames', 'Sorted Cells', figureDetails, 1)
+            print(['/Users/ananth/Desktop/figs/calciumActivity/dfbf_allTrials_' ...
+                db(iexp).mouse_name '_' num2str(db(iexp).sessionType) '_' num2str(db(iexp).session) '_sorted'],...
+                '-djpeg');
+        end
+    end
 end
+%toc
+%% Data Saving for Custom section
+
+%%
+disp('All done!')
 beep
 %% STRUCTURE OF RESULTS FILE
 % cell traces are in dat.Fcell
