@@ -4,7 +4,7 @@
 %                plotdFbyF.m
 % These may be found in "CustomFunctions"
 %tic
-close all
+%close all
 clear
 addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions')) % my custom functions
 %% SET ALL DEFAULT OPTIONS HERE
@@ -105,6 +105,7 @@ for iexp = 1:length(db) %[3:length(db) 1:2]
         figureDetails.transparency = 0.5;
     end
     
+    %trialDetails = getTrialDetails(db(iexp));
     trialDetails = getTrialDetails(db(iexp));
     
     % dF/F - custom
@@ -141,7 +142,8 @@ for iexp = 1:length(db) %[3:length(db) 1:2]
     trialPhase = 'CS-Trace-US'; % Crucial
     clear window %for sanity
     window = findWindow(trialPhase, trialDetails);
-    timeLockedCells = getTimeLockedCellList(dfbf, 5000, 'Minima', 1, window);
+    timeLockedCells = getTimeLockedCellList(dfbf, 5000, 'AOC' ,'Average', 1, window);
+    %timeLockedCells = getTimeLockedCellList(dfbf, 5000, 'Peak' ,'Minima', 1, window);
     
     % Sorting
     %trialPhase = 'CS-Trace-US';
@@ -161,7 +163,7 @@ for iexp = 1:length(db) %[3:length(db) 1:2]
             clear window %for sanity
             window = findWindow(trialPhase, trialDetails);
             
-            fig5 = figure(5);
+            fig5 = figure(7);
             set(fig5,'Position', [700, 700, 1200, 500]);
             subFig1 = subplot(1,2,1);
             %plot unsorted data

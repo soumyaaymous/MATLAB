@@ -4,7 +4,7 @@
 %              - mseb.m (for plotting shaded error bars; open-source)
 
 tic
-clear all
+clear
 %close all
 addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
@@ -17,9 +17,8 @@ plotFigures = 1;
 playVideo = 0;
 
 %% Dataset details
-sessionType = 1;
-%mice = [7 8 9 10];
-mice = 16;
+mice = [17 18 19 20 21 22];
+sessionType = 8;
 nSessions = 6;
 nTrials = 60; %default is 60
 startSession = nSessions; %single sessions
@@ -28,7 +27,13 @@ startTrial = 1;
 startFrame = 1;
 
 % Video details
-nFrames = 270; %per trial;
+if sessionType == 6
+    nFrames = 330; %per trial;
+elseif sessionType == 8
+    nFrames = 370; %per trial;
+else
+    nFrames = 330;
+end
 
 %% Directories
 imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
@@ -112,7 +117,9 @@ for mouse = 1:length(mice)
                     fecImage = imcrop(croppedImage,fecROI);
                     
                     %4 - Binarize
-                    % The "threshold" is established by "findTheEye.m"
+                    %fecImage_vector = reshape(fecImage,1,[]);
+                    %threshold = prctile(fecImage_vector,70);
+                    % Use the same "threshold"used by "findTheEye.m"
                     binImage = fecImage > threshold; %binarize
                     
                     binImage_vector = reshape(binImage,1,[]);
@@ -146,7 +153,7 @@ for mouse = 1:length(mice)
                         15. speed (10x normalized)
                         16. direction
                         17. Dilawar's measure of eye-blinks
-                        %}                        
+                        %}
                         timestamp3(trial,frame) = str2double(sprintf(dataLine(commai(2)+1:commai(3)-1),'%s'));
                         trialCount(trial,frame) = str2double(sprintf(dataLine(commai(3)+1:commai(4)-1),'%s'));
                         if trialCount(trial,frame) ~= trial
@@ -219,7 +226,7 @@ for mouse = 1:length(mice)
                     probeTrials(trial,1) = 1;
                     disp('Probe trial found!')
                 end
-               
+                
                 disp('... done')
             end
         else
@@ -258,7 +265,7 @@ for mouse = 1:length(mice)
             disp('... smoothening complete!')
         end
         
-        if alignFrames == 1 && sessionType <5
+        if alignFrames == 1
             disp('Aligning frames ...')
             csStartFrame = nan(nTrials,1);
             csStartOffset = nan(nTrials,1);
@@ -323,10 +330,27 @@ for mouse = 1:length(mice)
             FEC = fec;
             PUFF = puffUS;
             LED = ledCS;
-            MOTION1 = motion1;
-            MOTION2 = motion2;
-            SPEED = speed;
-            DIRECTION = direction;
+            %            MOTION1 = motion1;
+            %            MOTION2 = motion2;
+            %            SPEED = speed;
+            %            DIRECTION = direction;
+        end
+        
+        if saveData == 1
+            saveFolder = [saveDirec mouseName '/' dataset '/'];
+            if ~isdir(saveFolder)
+                mkdir(saveFolder);
+            end
+            
+            % Save FEC curve
+            save([saveFolder 'fec.mat' ], ...
+                'eyeClosure', 'FEC', ...
+                'LED', 'PUFF', ...
+                'MOTION1', 'MOTION2', ...
+                'probeTrials',...
+                'camera', 'microscope', ...
+                'SPEED', 'DIRECTION',...
+                'crop', 'fecROI')
         end
         
         if plotFigures == 1
@@ -341,12 +365,12 @@ for mouse = 1:length(mice)
             caxis([0 1])
             colormap(subFig1, jet)
             %freezeColors
-            if sessionType == 1
-                title([mouseName ' S' num2str(session) ' | 250 ms Trace | FEC '], ...
+            if sessionType == 6
+                title([mouseName ' S' num2str(session) ' | 550 ms Trace | FEC '], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
-            elseif sessionType == 2
-                title([mouseName ' S' num2str(session) ' | 350 ms Trace | FEC '], ...
+            elseif sessionType == 8
+                title([mouseName ' S' num2str(session) ' | 750 ms Trace | FEC '], ...
                     'FontSize', fontSize, ...
                     'FontWeight', 'bold')
             elseif sessionType == 3
@@ -405,7 +429,7 @@ for mouse = 1:length(mice)
             
             % Stimuli
             %subFig3 = subplot(3,2,3);
-            subFig3 = subplot(2,2,3);            
+            subFig3 = subplot(2,2,3);
             stimuli = (1*LED)+(2*PUFF);
             imagesc(stimuli)
             caxis([0 2])
@@ -462,83 +486,66 @@ for mouse = 1:length(mice)
             set(gca,'FontSize', fontSize-2)
             legend('mean Paired +/- stddev', 'mean Probe +/- stddev','Location', 'northwest')
             
-%             % Motion
-%             subFig2 = subplot(3,2,5);
-%             MOTION = SPEED.*DIRECTION;
-%             imagesc(MOTION)
-%             caxis([0 2])
-%             colormap(subFig2, jet)
-%             %freezeColors
-%             title('Motion', ...
-%                 'FontSize', fontSize, ...
-%                 'FontWeight', 'bold')
-%             set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
-%             set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
-%             xlabel('Time/ms', ...
-%                 'FontSize', fontSize,...
-%                 'FontWeight', 'bold')
-%             set(gca,'YTick',[10, 20, 30, 40, 50, 60])
-%             set(gca,'YTickLabel',({10; 20; 30; 40; 50; 60}))
-%             ylabel('Trials', ...
-%                 'FontSize', fontSize,...
-%                 'FontWeight', 'bold')
-%             z = colorbar;
-%             %cbfreeze(z)
-%             %set(z,'YTick',[0, 1, 2])
-%             %set(z,'YTickLabel',({'Off'; 'LED'; 'Puff'}))
-%             set(gca,'FontSize', fontSize-2)
-%             
-%             % Shaded error bars
-%             notProbes = find(~probeTrials);
-%             meanFEC = nanmean(FEC(notProbes,:),1);
-%             meanFEC_stddev = nanstd(FEC(notProbes,:),1);
-%             probes = find(probeTrials);
-%             meanFEC_probe = nanmean(FEC(probes,:),1);
-%             meanFEC_probe_stddev = nanstd(FEC(probes,:),1);
-%             
-%             subplot(3,2,6)
-%             lineProps1.col{1} = 'red';
-%             lineProps2.col{1} = 'green';
-%             mseb([],meanFEC, meanFEC_stddev,...
-%                 lineProps1, transparency);
-%             hold on
-%             mseb([],meanFEC_probe, meanFEC_probe_stddev,...
-%                 lineProps2, transparency);
-%             ylim([0 1]);
-%             title('CS+US vs Probe Trials', ...
-%                 'FontSize', fontSize, ...
-%                 'FontWeight', 'bold')
-%             set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
-%             set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
-%             xlabel('Time/ms', ...
-%                 'FontSize', fontSize,...
-%                 'FontWeight', 'bold')
-%             ylabel('FEC', ...
-%                 'FontSize', fontSize, ...
-%                 'FontWeight', 'bold')
-%             set(gca,'FontSize', fontSize-2)
-%             legend('mean Paired +/- stddev', 'mean Probe +/- stddev','Location', 'northwest')
+            %             % Motion
+            %             subFig2 = subplot(3,2,5);
+            %             MOTION = SPEED.*DIRECTION;
+            %             imagesc(MOTION)
+            %             caxis([0 2])
+            %             colormap(subFig2, jet)
+            %             %freezeColors
+            %             title('Motion', ...
+            %                 'FontSize', fontSize, ...
+            %                 'FontWeight', 'bold')
+            %             set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
+            %             set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            %             xlabel('Time/ms', ...
+            %                 'FontSize', fontSize,...
+            %                 'FontWeight', 'bold')
+            %             set(gca,'YTick',[10, 20, 30, 40, 50, 60])
+            %             set(gca,'YTickLabel',({10; 20; 30; 40; 50; 60}))
+            %             ylabel('Trials', ...
+            %                 'FontSize', fontSize,...
+            %                 'FontWeight', 'bold')
+            %             z = colorbar;
+            %             %cbfreeze(z)
+            %             %set(z,'YTick',[0, 1, 2])
+            %             %set(z,'YTickLabel',({'Off'; 'LED'; 'Puff'}))
+            %             set(gca,'FontSize', fontSize-2)
+            %
+            %             % Shaded error bars
+            %             notProbes = find(~probeTrials);
+            %             meanFEC = nanmean(FEC(notProbes,:),1);
+            %             meanFEC_stddev = nanstd(FEC(notProbes,:),1);
+            %             probes = find(probeTrials);
+            %             meanFEC_probe = nanmean(FEC(probes,:),1);
+            %             meanFEC_probe_stddev = nanstd(FEC(probes,:),1);
+            %
+            %             subplot(3,2,6)
+            %             lineProps1.col{1} = 'red';
+            %             lineProps2.col{1} = 'green';
+            %             mseb([],meanFEC, meanFEC_stddev,...
+            %                 lineProps1, transparency);
+            %             hold on
+            %             mseb([],meanFEC_probe, meanFEC_probe_stddev,...
+            %                 lineProps2, transparency);
+            %             ylim([0 1]);
+            %             title('CS+US vs Probe Trials', ...
+            %                 'FontSize', fontSize, ...
+            %                 'FontWeight', 'bold')
+            %             set(gca,'XTick', [35, 75, 115, 155, 195, 235]) %NOTE: Starting 5 frames are skipped
+            %             set(gca,'XTickLabel', ({200; 400; 600; 800; 1000; 1200})) %NOTE: At 200 fps, every frame is a 5 ms timestep.
+            %             xlabel('Time/ms', ...
+            %                 'FontSize', fontSize,...
+            %                 'FontWeight', 'bold')
+            %             ylabel('FEC', ...
+            %                 'FontSize', fontSize, ...
+            %                 'FontWeight', 'bold')
+            %             set(gca,'FontSize', fontSize-2)
+            %             legend('mean Paired +/- stddev', 'mean Probe +/- stddev','Location', 'northwest')
             
             print(['/Users/ananth/Desktop/figs/FEC/fec_' ...
                 mouseName '_' num2str(sessionType) '_' num2str(session)],...
                 '-djpeg');
-        end
-        
-        if saveData == 1
-            saveFolder = [saveDirec mouseName '/' dataset '/'];
-            if ~isdir(saveFolder)
-                mkdir(saveFolder);
-            end
-            
-            % Save FEC curve
-            save([saveFolder 'fec.mat' ], ...
-                'eyeClosure', 'FEC', ...
-                'LED', 'PUFF', ...
-                'MOTION1', 'MOTION2', ...
-                'probeTrials',...
-                'camera', 'microscope', ...
-                'SPEED', 'DIRECTION',...
-                'crop', 'fecROI')
         end
         disp([dataset ' analyzed'])
     end

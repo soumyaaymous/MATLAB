@@ -2,18 +2,22 @@
 % DEPENDENCIES - None.
 % NOTE - sortingVideos.m is now obsolete
 
-%clear all
+clear
 %close all
 
 addpath(genpath('/Users/ananth/Documents/MATLAB/CustomFunctions'))
 
+%% Directories
+imageProcessDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
+
 %% Operations
 saveData = 1;
-playVideo = 0;
+loadData = 0;
+playVideo = 1;
 
 %% Dataset details
-sessionType = 1;
-mice = 16;
+mice = 22;
+sessionType = 8;
 nSessions = 6;
 
 nTrials = 1; %default is 1
@@ -23,25 +27,16 @@ startFrame = 1;
 
 %Video details
 %samplingRate = 100; % in Frames Per Second (FPS)
-trialDuration = 1.5; % in seconds
+%trialDuration = 1.5; % in seconds
 %nFrames = floor(samplingRate*trialDuration); %per trial
-nFrames = 250;
-percentile = 60; %for binarization
 
-%%
-% Crop parameters - please change to requirement
-xmin1 = 245;
-ymin1 = 63;
-width1 = 200;
-height1 = 120;
-crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
-
-% FEC parameters - please don't change, unless absolutely necessary
-xmin2 = 118; % Don't change
-ymin2 = 5; % Don't change
-width2 = 30; % Don't change
-height2 = 120;% Don't change; currently set to height1.
-fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
+if sessionType == 6
+    nFrames = 330; %per trial;
+elseif sessionType == 8
+    nFrames = 370; %per trial;
+else
+    nFrames = 330;
+end
 
 %% Directories
 saveDirec = '/Users/ananth/Desktop/Work/Analysis/Behaviour/ImageProcess/';
@@ -67,6 +62,28 @@ for mouse = 1:length(mice)
         dataset = [mouseName '_' num2str(sessionType) '_' num2str(session)];
         disp(['Working on ' dataset])
         
+        %%
+        if loadData == 0
+            percentile = 65;
+            % Crop parameters - please change to requirement
+            xmin1 = 220;
+            ymin1 = 60;
+            width1 = 200;
+            height1 = 150;
+            crop = [xmin1 ymin1 width1 height1]; %[xmin ymin width height] of refImage
+            
+            % !!! - Please Don't Change! - !!!
+            % FEC parameters - please don't change, unless absolutely necessary
+            xmin2 = 118; % Don't change
+            ymin2 = 5; % Don't change
+            width2 = 30; % Don't change
+            height2 = 150;% Don't change; currently set to height1.
+            fecROI = [xmin2 ymin2 width2 height2]; %[xmin ymin width height] of croppedImage
+        else
+            load([imageProcessDirec mouseName '/' dataset '/imageProcess.mat'])
+        end
+        
+        
         if playVideo == 1
             disp('Playing Video ...');
             for trial = startTrial:nTrials
@@ -78,7 +95,8 @@ for mouse = 1:length(mice)
                         '/trial_0' num2str(trial) '.tif'];
                 end
                 
-                for frame = startFrame:nFrames
+                %for frame = startFrame:nFrames
+                for frame = 80:300 %default -> 80:200
                     %1 - Load the reference image (first image in Trial 1)
                     refImage = double(imread(file, frame));
                     
@@ -89,7 +107,8 @@ for mouse = 1:length(mice)
                     fecImage = imcrop(croppedImage,fecROI);
                     
                     %4 - Binarize
-                    if frame == startFrame
+                    %if frame == startFrame
+                    if frame == 80
                         fecImage_vector = reshape(fecImage,1,[]);
                         threshold = prctile(fecImage_vector,percentile);
                     end
@@ -97,7 +116,7 @@ for mouse = 1:length(mice)
                     
                     pause(0.1)
                     fig2 = figure(2);
-                    set(fig2,'Position', [100, 100, 600, 400]);
+                    set(fig2,'Position', [50, 50, 1000, 400]);
                     subplot(1,3,1)
                     imagesc(croppedImage)
                     %colormap(gray)
@@ -153,7 +172,7 @@ for mouse = 1:length(mice)
             binImage = fecImage > threshold; %binarize
             
             fig1 = figure(1);
-            set(fig1,'Position', [100, 100, 600, 400]);
+            set(fig1,'Position', [50, 50, 600, 400]);
             subplot(2,2,1)
             imagesc(refImage)
             z = colorbar;
