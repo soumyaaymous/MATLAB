@@ -1,6 +1,6 @@
 function window = findWindow(trialPhase, trialDetails)
 
-disp('Finding window for analysis ...')
+%disp('Finding window for analysis ...')
 
 if strcmp(trialPhase, 'Pre')
     On = 1;

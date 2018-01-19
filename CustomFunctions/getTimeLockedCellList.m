@@ -4,6 +4,7 @@
 function timeLockedCells = getTimeLockedCellList(Data, nShuffles, identificationPrinciple, comparisonPrinciple, threshold, window)
 
 timeLockedCells = []; %preallocation
+
 disp('Checking for time-locked cells ...')
 for cell = 1:size(Data,1)
     result = isTimeLockedCell(squeeze(Data(cell, :, :)), nShuffles, identificationPrinciple, comparisonPrinciple, threshold, window); %Data should be 2D (trials vs frames)
@@ -17,3 +18,4 @@ for cell = 1:size(Data,1)
 end
 disp([num2str(length(timeLockedCells)) ' time-locked cells found!'])
 disp('... done!')
+

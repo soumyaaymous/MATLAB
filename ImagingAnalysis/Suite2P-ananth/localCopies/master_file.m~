@@ -156,11 +156,10 @@ for iexp = 1:length(db) %[3:length(db) 1:2]
             A(timeLockedCells) = sumTrialReliability(timeLockedCells);
             B = zeros(1,size(dfbf,1));
             B(timeLockedCells) = nan;
-            B(~isnan(B)) = sumTrialReliability(~isnan(B));
+            B
             
             if ops0.fig
-                fig11 = figure(11);
-                set(fig11,'Position',[300,300,1200,500])
+                figure(11)
                 plot(sumTrialReliability, 'b', 'LineWidth', figureDetails.lineWidth)
                 hold on
                 plot(A, 'r*', 'MarkerSize', figureDetails.markerSize)
@@ -176,7 +175,6 @@ for iexp = 1:length(db) %[3:length(db) 1:2]
                     'FontSize', figureDetails.fontSize, ...
                     'FontWeight', 'bold')
                 set(gca,'FontSize', figureDetails.fontSize-2)
-                legend('All Cells', 'Time Cells', 'Not Time Cells')
             end
         end
         
