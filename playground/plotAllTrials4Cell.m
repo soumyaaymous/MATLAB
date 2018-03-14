@@ -1,4 +1,4 @@
-cell = 19;
+cell = 18;
 A = squeeze(dfbf_sorted_timeCells(cell, :, :));
 
 %cellCalcium = A(:, (window(1):window(length(window))));
