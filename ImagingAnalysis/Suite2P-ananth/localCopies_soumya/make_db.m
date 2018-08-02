@@ -1,0 +1,19 @@
+i = 0;
+
+ i = i+1; %1
+ db(i).mouse_name    = 'g5_791';
+ db(i).date          = '20180425';
+ db(i).sessionType   = 1;
+ db(i).session       = 1501;
+ db(i).diameter      = 13;
+ db(i).scanAmplitude = '1.3V';
+ db(i).nFrames       = 129;
+ db(i).nTrials       = 79; %usable trials
+ db(i).comments      = '250 ms TEC';
+ db(i).trialDuration = 11; %in seconds
+ db(i).expts         = [1];
+ db(i).nplanes       = 1;
+ db(i).gchannel      = 1;
+ db(i).nplanes       = 1;
+ db(i).expred        = [];
+ db(i).nchannels_red = 0;

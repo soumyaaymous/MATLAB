@@ -1,0 +1,47 @@
+ %Modality specific trials
+
+      [sound_trials, light_trials] = sortTrialsByModality (db(iexp));
+                                                           
+                                                                
+     dfbf_light=dfbf(:,[light_trials],:);
+     dfbf_sound=dfbf(:,[sound_trials],:);
+     dfbf_timeLockedCells_soundTrials = dfbf(timeLockedCells,[sound_trials],:);
+     dfbf_timeLockedCells_lightTrials = dfbf(timeLockedCells,[light_trials],:);
+     [sortedCells_light, peakIndices_light] = sortData(dfbf_timeLockedCells_lightTrials(:,:,window), 1);
+     [sortedCells_sound, peakIndices_sound] = sortData(dfbf_timeLockedCells_soundTrials(:,:,window), 1);
+
+     dfbf_sorted_timeCells_light = dfbf_timeLockedCells_lightTrials(sortedCells_light,:,:);
+     dfbf_sorted_timeCells_sound = dfbf_timeLockedCells_soundTrials(sortedCells_sound,:,:);
+
+     dfbf_timeCells_light_sortedLikeSound = dfbf_timeLockedCells_lightTrials(sortedCells_sound,:,:);
+     dfbf_timeCells_sound_sortedLikeLight = dfbf_timeLockedCells_soundTrials(sortedCells_light,:,:);
+    
+     
+     
+  %Plotting dfbf of cells; trial separated according to stimuli and sorted.   
+  
+  
+             fig5 = figure(7);
+            set(fig5,'Position', [700, 700, 1200, 500]);
+            subFig1 = subplot(1,2,1);
+            %plot light trials- sorted data
+            plotSequences(db(iexp), dfbf_sorted_timeCells_light(:,:,window), trialPhase, 'Frames', 'Light trials-sorted Cells', figureDetails, 1)
+            subFig2 = subplot(1,2,2);
+            %plot sound trials- sorted according to light trials
+            plotSequences(db(iexp), dfbf_timeCells_sound_sortedLikeLight(:,:,window), trialPhase, 'Frames', 'Sound trials- Sorted like light', figureDetails, 1)
+            print(['/home/soumya/suite2P_results/figs/sort/timeCells_mixedTrials_sorted_/' ...
+                db(iexp).mouse_name '_' num2str(db(iexp).sessionType) '_' num2str(db(iexp).session) 'light sorting'],...
+                '-djpeg');
+    
+             fig5 = figure(8);
+            set(fig5,'Position', [700, 700, 1200, 500]);
+            subFig1 = subplot(1,2,1);
+            %plot light trials- sorted data
+            plotSequences(db(iexp), dfbf_sorted_timeCells_sound(:,:,window), trialPhase, 'Frames', 'Sound trials-sorted Cells', figureDetails, 1)
+            subFig2 = subplot(1,2,2);
+            %plot sound trials- sorted according to light trials
+            plotSequences(db(iexp), dfbf_timeCells_light_sortedLikeSound(:,:,window), trialPhase, 'Frames', 'light trials- Sorted like sound', figureDetails, 1)
+            print(['/home/soumya/suite2P_results/figs/sort/timeCells_mixedTrials_sorted_/' ...
+                db(iexp).mouse_name '_' num2str(db(iexp).sessionType) '_' num2str(db(iexp).session) 'sound sorting],...
+                '-djpeg');
+    
